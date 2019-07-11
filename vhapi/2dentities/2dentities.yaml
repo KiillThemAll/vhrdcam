@@ -1,0 +1,27 @@
+# possible way of expressing algebraic enums
+
+types:
+  entity:
+    type: enum
+    values:
+      - point_entity:
+          type: struct
+          fields:
+            - name: x
+              type: float
+            - name: y
+              type: float
+            - name: z
+              type: float
+            - name: r
+              type: uint8
+            - name: g
+              type: uint8
+            - name: b
+              type: uint8
+      - line_entity:
+        type: struct
+        fields:
+          - name: a
+            type: 
+          

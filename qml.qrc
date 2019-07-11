@@ -1,0 +1,27 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Scene.qml</file>
+        <file>shaders/thickline.frag</file>
+        <file>shaders/thickline.geom</file>
+        <file>shaders/thickline.vert</file>
+        <file>shaders/thinline.vert</file>
+        <file>shaders/thinline.frag</file>
+        <file>main3donly.qml</file>
+        <file>Background.qml</file>
+        <file>BackgroundEffect.qml</file>
+        <file>BasicCamera.qml</file>
+        <file>WaveForwardRenderer.qml</file>
+        <file>shaders/background.frag</file>
+        <file>shaders/background.vert</file>
+        <file>Line.qml</file>
+        <file>ThickLine.qml</file>
+        <file>shaders/thinline.geom</file>
+        <file>CoordinatePlane.qml</file>
+        <file>UI.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>TrefoilKnot.qml</file>
+        <file>trefoil.obj</file>
+    </qresource>
+    <qresource prefix="/shaders"/>
+</RCC>
