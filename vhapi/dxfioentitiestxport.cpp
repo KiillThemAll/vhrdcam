@@ -1,6 +1,6 @@
 #include "dxfioentitiestxport.h"
 #include <QDebug>
-#include "qmsgpack/msgpackstream.h"
+#include "3rdparty/qmsgpack/src/msgpackstream.h"
 #include "2dentities/baseentity.hpp"
 #include "2dentities/polylineentity.h"
 #include "2dentities/markerentity.hpp"

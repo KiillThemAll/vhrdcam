@@ -165,7 +165,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
             points << shape.intersect(line);
         }
 
-        qSort(points.begin(), points.end(), [goingUp](PointEntity &a, PointEntity &b) { return goingUp ? a.m_y < b.m_y : a.m_y > b.m_y; } );
+        std::sort(points.begin(), points.end(), [goingUp](PointEntity &a, PointEntity &b) { return goingUp ? a.m_y < b.m_y : a.m_y > b.m_y; } );
         //qDebug() << "points pre" << points;
         QMutableListIterator<PointEntity> it(points);
         while (it.hasNext()) {

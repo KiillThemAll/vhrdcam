@@ -1,3 +1,4 @@
 [submodule "3rdparty/qmsgpack"]
 	path = 3rdparty/qmsgpack
 	url = git@github.com:romixlab/qmsgpack.git
+	branch = streamv2

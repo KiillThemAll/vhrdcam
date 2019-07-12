@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform float	thickness;	// the thickness of the line in pixels
+//uniform float	thickness;	// the thickness of the line in pixels
 uniform float	miterLimit;     // 1.0: always miter, -1.0: never miter, 0.75: default
 uniform vec2	winScale;       // the size of the viewport in pixels
 
@@ -53,25 +53,29 @@ void main(void)
   vec2 miter_a = normalize(n0 + n1);	// miter at start of current segment
   vec2 miter_b = normalize(n1 + n2);	// miter at end of current segment
 
+  // variable thickness
+  float thickness_a = gs_in[1].thickness;
+  float thickness_b = gs_in[2].thickness;
+
   // determine the length of the miter by projecting it onto normal and then inverse it
-  float length_a = gs_in[1].thickness / dot(miter_a, n1);
-  float length_b = gs_in[2].thickness / dot(miter_b, n1);
+  float length_a = thickness_a / dot(miter_a, n1);
+  float length_b = thickness_b / dot(miter_b, n1);
   
   // prevent excessively long miters at sharp corners
   if( dot(v0,v1) < -miterLimit ) {
 	miter_a = n1;
-        length_a = thickness;
+        length_a = thickness_a;
 	
 	// close the gap
 	if( dot(v0,n1) > 0 ) {
                 //gsTexCoord = vec2(0, 0);
                 //gl_FrontColor = gl_FrontColorIn[1];
-                gl_Position = vec4( (p1 + thickness * n0) / winScale, 0.0, 1.0 );
+                gl_Position = vec4( (p1 + thickness_a * n0) / winScale, 0.0, 1.0 );
                 gs_out.color = vec3(0,255,0);
 		EmitVertex();
                 //gsTexCoord = vec2(0, 0);
                 //gl_FrontColor = gl_FrontColorIn[1];
-                gl_Position = vec4( (p1 + thickness * n1) / winScale, 0.0, 1.0 );
+                gl_Position = vec4( (p1 + thickness_a * n1) / winScale, 0.0, 1.0 );
 		EmitVertex();
                 //gsTexCoord = vec2(0, 0.5);
                 //gl_FrontColor = gl_FrontColorIn[1];
@@ -82,12 +86,12 @@ void main(void)
 	else {
                 //gsTexCoord = vec2(0, 1);
                 //gl_FrontColor = gl_FrontColorIn[1];
-                gl_Position = vec4( (p1 - thickness * n1) / winScale, 0.0, 1.0 );
+                gl_Position = vec4( (p1 - thickness_a * n1) / winScale, 0.0, 1.0 );
                 gs_out.color = vec3(0,0,255);
 		EmitVertex();		
                 //gsTexCoord = vec2(0, 1);
                 //gl_FrontColor = gl_FrontColorIn[1];
-                gl_Position = vec4( (p1 - thickness * n0) / winScale, 0.0, 1.0 );
+                gl_Position = vec4( (p1 - thickness_a * n0) / winScale, 0.0, 1.0 );
 		EmitVertex();
                 //gsTexCoord = vec2(0, 0.5);
                 //gl_FrontColor = gl_FrontColorIn[1];
@@ -99,7 +103,7 @@ void main(void)
 
   if( dot(v1,v2) < -miterLimit ) {
 	miter_b = n1;
-        length_b = thickness;
+        length_b = thickness_b;
   }
   
   // generate the triangle strip

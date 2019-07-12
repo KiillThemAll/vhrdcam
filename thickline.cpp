@@ -30,9 +30,9 @@ ThickLine::ThickLine(Qt3DCore::QNode *parent) :
     filterKey->setValue("forward");
     technique->addFilterKey(filterKey);
 
-    technique->addParameter(new QParameter("thickness", 10));
+    //technique->addParameter(new QParameter("thickness", 10));
     technique->addParameter(new QParameter("winScale", QVector2D(1366, 768)));
-    technique->addParameter(new QParameter("miterLimit", 1.0f));
+    technique->addParameter(new QParameter("miterLimit", 0.95f));
 
     QRenderPass *renderPass = new QRenderPass();
     QShaderProgram *shaderProgram = new QShaderProgram;

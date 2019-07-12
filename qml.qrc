@@ -21,7 +21,6 @@
         <file>UI.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>TrefoilKnot.qml</file>
-        <file>trefoil.obj</file>
     </qresource>
     <qresource prefix="/shaders"/>
 </RCC>
