@@ -26,7 +26,6 @@ Rectangle {
             anchors.topMargin: 20
             text: "Draw smth"
             onClicked: playground.onDrawSmthClicked()
-            focus: false
         }
 
         Button {
@@ -35,7 +34,6 @@ Rectangle {
             anchors.topMargin: 80
             text: "Draw +"
             onClicked: playground.onDrawPlusClicked()
-            focus: false
         }
 
         Button {
@@ -44,7 +42,6 @@ Rectangle {
             anchors.topMargin: 140
             text: "Load"
             onClicked: dxfio.load()
-            focus: false
         }
 
         Button {
@@ -53,7 +50,16 @@ Rectangle {
             anchors.topMargin: 200
             text: "Stop 0mq"
             onClicked: zmq.stop()
-            focus: false
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 260
+            text: "Focus"
+            onClicked: {
+                scene3d.focus = true
+            }
         }
     }
 
@@ -71,7 +77,6 @@ Rectangle {
         Scene3D {
             id: scene3d
             anchors.fill: parent
-            focus: true
             aspects: ["input", "logic"]
             cameraAspectRatioMode: Scene3D.AutomaticAspectRatio
 

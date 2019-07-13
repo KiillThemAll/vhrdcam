@@ -67,7 +67,7 @@ ThickLineGeometry::ThickLineGeometry(QNode *parent) :
     m_thicknessAttribute->setBuffer(m_vertexBuffer);
 
     m_indexAttribute->setAttributeType(QAttribute::IndexAttribute);
-    m_indexAttribute->setVertexBaseType(QAttribute::UnsignedShort);
+    m_indexAttribute->setVertexBaseType(QAttribute::UnsignedInt);
     m_indexAttribute->setBuffer(m_indexBuffer);
 
     addAttribute(m_positionAttribute);
@@ -96,8 +96,8 @@ void ThickLineGeometry::clear()
     qDebug() << "startDrawing(), capacity: " << m_vertexData.capacity() << ", size: " << m_vertexData.size();
     m_vertexData.clear();
     m_indexData.clear();
-    m_vertexData.reserve(sizeof(thick_line_stride_t) * 100);
-    m_indexData.reserve(4 * sizeof(quint16) * 100);
+    m_vertexData.reserve(sizeof(thick_line_stride_t) * 300000);
+    m_indexData.reserve(4 * sizeof(quint32) * 3000000);
     m_currentPointIndex = 0;
     m_globalPointIndex = 0;
     qDebug() << "clear, capacity: " << m_vertexData.capacity() << ", size: " << m_vertexData.size();
@@ -137,10 +137,10 @@ void ThickLineGeometry::addPoint(float x, float y, float z, quint8 r, quint8 g, 
         adjBefore->z = 2 * firstPoint->z - z;
         adjBefore->r = 0; adjBefore->g = 0; adjBefore->b = 0; adjBefore->t = 0;
 
-        m_indexData.resize(m_indexData.size() + sizeof(quint16) * 4);
-        quint16 * idx = reinterpret_cast<quint16 *>(m_indexData.data()
+        m_indexData.resize(m_indexData.size() + sizeof(quint32) * 4);
+        quint32 * idx = reinterpret_cast<quint32 *>(m_indexData.data()
                                                     + m_indexData.size()
-                                                    - sizeof(quint16) * 4);
+                                                    - sizeof(quint32) * 4);
         idx[0] = m_globalPointIndex + m_currentPointIndex - 1;
         idx[1] = m_globalPointIndex + m_currentPointIndex;
         idx[2] = m_globalPointIndex + m_currentPointIndex + 1;
@@ -157,10 +157,10 @@ void ThickLineGeometry::addPoint(float x, float y, float z, quint8 r, quint8 g, 
         // reserve space for next point or last adj point
         m_vertexData.resize(m_vertexData.size() + 1 * sizeof(thick_line_stride_t));
 
-        m_indexData.resize(m_indexData.size() + sizeof(quint16) * 4);
-        quint16 * idx = reinterpret_cast<quint16 *>(m_indexData.data()
+        m_indexData.resize(m_indexData.size() + sizeof(quint32) * 4);
+        quint32 * idx = reinterpret_cast<quint32 *>(m_indexData.data()
                                                     + m_indexData.size()
-                                                    - sizeof(quint16) * 4);
+                                                    - sizeof(quint32) * 4);
         idx[0] = m_globalPointIndex + m_currentPointIndex - 1;
         idx[1] = m_globalPointIndex + m_currentPointIndex;
         idx[2] = m_globalPointIndex + m_currentPointIndex + 1;
@@ -208,17 +208,18 @@ void ThickLineGeometry::flush()
     m_thicknessAttribute->setCount(strideCount);
     m_vertexBuffer->setData(m_vertexData);
 
-    quint32 indexCount = m_indexData.size() / sizeof(quint16);
+    quint32 indexCount = m_indexData.size() / sizeof(quint32);
 
-//    quint16 *idx = reinterpret_cast<quint16 *>(m_indexData.data());
+//    quint32 *idx = reinterpret_cast<quint32 *>(m_indexData.data());
 //    for (quint32 i = 0; i < indexCount; i += 4) {
 //        qDebug() << *idx << *(idx + 1) << *(idx + 2) << *(idx + 3);
 //        idx += 4;
 //    }
 
-
     m_indexAttribute->setCount(indexCount);
     m_indexBuffer->setData(m_indexData);
+
+    qDebug() << "strides:" << strideCount << m_vertexData.size() << "bytes;\t" << "indexes:" << indexCount << m_indexData.size() << "bytes";
 }
 
 void ThickLineGeometry::finishStrip()

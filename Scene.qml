@@ -55,7 +55,7 @@ Entity {
 
     OrbitCameraController {
         camera: mainCamera
-        linearSpeed: 2.0
+        linearSpeed: 0.1
     }
 
 //    Background {

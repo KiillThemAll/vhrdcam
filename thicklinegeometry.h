@@ -45,8 +45,8 @@ private:
     Qt3DRender::QBuffer *m_indexBuffer;
     QByteArray m_vertexData;
     QByteArray m_indexData;
-    quint16 m_currentPointIndex;
-    quint16 m_globalPointIndex;
+    quint32 m_currentPointIndex;
+    quint32 m_globalPointIndex;
 
     void finishStrip();
 };

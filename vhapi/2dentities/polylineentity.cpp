@@ -66,7 +66,7 @@ QList<PointEntity> PolylineEntity::intersect(const LineEntity &line) const
     QLineF l1(line.m_a.m_x, line.m_a.m_y, line.m_b.m_x, line.m_b.m_y);
     QList<PointEntity> points;
 
-    for (quint32 i = 0, j = 1; i < m_points.length(); ++i, j++) {
+    for (qint32 i = 0, j = 1; i < m_points.length(); i++, j++) {
         if (j == m_points.length())
             j = 0;
         PointEntity p1 = m_points[i].point;
@@ -75,8 +75,16 @@ QList<PointEntity> PolylineEntity::intersect(const LineEntity &line) const
 
         QPointF pt;
         QLineF::IntersectType t = l1.intersect(l2, &pt);
-        if (t == QLineF::IntersectType::BoundedIntersection)
-            points.append(PointEntity(pt.x(), pt.y(), 0.0));
+        PointEntity px = PointEntity(pt.x(), pt.y(), 0.0);
+        if (t == QLineF::IntersectType::BoundedIntersection) {
+            points.append(px);
+        } else if (t == QLineF::IntersectType::UnboundedIntersection) {
+            if (px == p1 || px == p2) {
+                qDebug() << "Glitch found";
+                if (!points.contains(px))
+                    points.append(px);
+            }
+        }
     }
 
     return points;

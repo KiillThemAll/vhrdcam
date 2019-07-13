@@ -38,9 +38,9 @@ bool PointEntity::isValid() const
 
 bool PointEntity::operator ==(const PointEntity &other) const
 {
-    return m_x == other.m_x &&
-            m_y == other.m_y &&
-            m_z == other.m_z;
+    return fabs(m_x - other.m_x) < 1e-6 &&
+           fabs(m_y - other.m_y) < 1e-6 &&
+           fabs(m_z - other.m_z) < 1e-6;
 }
 
 bool PointEntity::operator !=(const PointEntity &other) const

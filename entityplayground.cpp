@@ -146,7 +146,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
 
     PointEntity a(allShapesBox.bottomLeft().x(), allShapesBox.bottomLeft().y(), 0.0f);
     PointEntity b(allShapesBox.topLeft().x(), allShapesBox.topLeft().y(), 0.0f);
-    float dx = 0.05;
+    float dx = 0.15;
     bool goingUp = true;
 
     PolylineEntity pl;
