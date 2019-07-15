@@ -64,8 +64,18 @@ void PolylineEntity::setRect(const QRectF &rect)
 QList<PointEntity> PolylineEntity::intersect(const LineEntity &line) const
 {
     QLineF l1(line.m_a.m_x, line.m_a.m_y, line.m_b.m_x, line.m_b.m_y);
-    QList<PointEntity> points;
+    QRectF box = boundingBox();
+    QLineF d1 = QLineF(box.bottomLeft(), box.topRight());
+    QLineF d2 = QLineF(box.topLeft(), box.bottomRight());
+    QPointF pt;
+    QLineF::IntersectType t1 = l1.intersect(d1, &pt);
+    QLineF::IntersectType t2 = l1.intersect(d2, &pt);
+    if (!( t1 == QLineF::IntersectType::BoundedIntersection &&
+           t2 == QLineF::IntersectType::BoundedIntersection) ) {
+        return QList<PointEntity>();
+    }
 
+    QList<PointEntity> points;
     for (qint32 i = 0, j = 1; i < m_points.length(); i++, j++) {
         if (j == m_points.length())
             j = 0;
@@ -77,13 +87,8 @@ QList<PointEntity> PolylineEntity::intersect(const LineEntity &line) const
         QLineF::IntersectType t = l1.intersect(l2, &pt);
         PointEntity px = PointEntity(pt.x(), pt.y(), 0.0);
         if (t == QLineF::IntersectType::BoundedIntersection) {
-            points.append(px);
-        } else if (t == QLineF::IntersectType::UnboundedIntersection) {
-            if (px == p1 || px == p2) {
-                qDebug() << "Glitch found";
-                if (!points.contains(px))
-                    points.append(px);
-            }
+            if (!points.contains(px))
+                points.append(px);
         }
     }
 

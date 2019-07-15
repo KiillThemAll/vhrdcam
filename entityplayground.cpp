@@ -167,18 +167,18 @@ void EntityPlayground::onEntity(const QVariant &entity)
 
         std::sort(points.begin(), points.end(), [goingUp](PointEntity &a, PointEntity &b) { return goingUp ? a.m_y < b.m_y : a.m_y > b.m_y; } );
         //qDebug() << "points pre" << points;
-        QMutableListIterator<PointEntity> it(points);
-        while (it.hasNext()) {
-            PointEntity current = it.next();
-            if (it.hasNext()) {
-                PointEntity next = it.next();
-                if (current == next) {
-                    it.remove();
-                    it.previous();
-                    it.remove();
-                }
-            }
-        }
+//        QMutableListIterator<PointEntity> it(points);
+//        while (it.hasNext()) {
+//            PointEntity current = it.next();
+//            if (it.hasNext()) {
+//                PointEntity next = it.next();
+//                if (current == next) {
+//                    it.remove();
+//                    it.previous();
+//                    it.remove();
+//                }
+//            }
+//        }
         //qDebug() << "points after" << points;
         if (points.isEmpty()) {
             a.m_x += dx;
