@@ -10,7 +10,7 @@
         <file>main3donly.qml</file>
         <file>Background.qml</file>
         <file>BackgroundEffect.qml</file>
-        <file>BasicCamera.qml</file>
+        <file>OrthoCamera.qml</file>
         <file>WaveForwardRenderer.qml</file>
         <file>shaders/background.frag</file>
         <file>shaders/background.vert</file>

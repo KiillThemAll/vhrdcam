@@ -29,6 +29,9 @@ add_executable(${PROJECT_NAME} "main.cpp"
     "vhapi/2dentities/shapeentity.cpp"
     "vhapi/d2entityrenderervhapi.cpp"
     "vhapi/2dentities/curveentity.cpp"
+    "vhapi/2dentities/point4fentity.cpp"
+    "vhapi/2dentities/bsplineentity.cpp"
+    "vhapi/2dentities/arcentity.cpp"
     "vhapi/d2entityrendererentitiesioportvhapi.cpp"
     "vhapi/rxport.cpp"
     "vhapi/2dentities/polylineentity.cpp"
@@ -48,4 +51,4 @@ add_executable(${PROJECT_NAME} "main.cpp"
     "qml.qrc")
 #target_include_directories(${PROJECT_NAME} PUBLIC ${ZMQ_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ZMQ_LIBRARIES} PRIVATE Qt5::Core Qt5::Quick Qt5::Qml Qt5::3DRender Qt5::3DCore Qt5::3DExtras Qt5::3DQuickExtras Qt5::3DInput Qt5::3DQuick)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ZeroMQ_LIBRARIES} PRIVATE Qt5::Core Qt5::Quick Qt5::Qml Qt5::3DRender Qt5::3DCore Qt5::3DExtras Qt5::3DQuickExtras Qt5::3DInput Qt5::3DQuick)

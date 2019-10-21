@@ -61,6 +61,14 @@ Rectangle {
                 scene3d.focus = true
             }
         }
+
+        Slider {
+            id: slider
+            anchors.centerIn: parent
+            from: 0.1
+            to: 50
+            value: 1.0
+        }
     }
 
     Component.onCompleted: {
@@ -78,10 +86,12 @@ Rectangle {
             id: scene3d
             anchors.fill: parent
             aspects: ["input", "logic"]
-            cameraAspectRatioMode: Scene3D.AutomaticAspectRatio
+            cameraAspectRatioMode: Scene3D.UserAspectRatio
 
             Scene {
                 id: rootEntity
+                camera.aspectRatio: scene3d.width / scene3d.height
+                camera.zoom: slider.value
             }
 
 
@@ -124,6 +134,17 @@ Rectangle {
                 //console.info(mouse.x, mouse.y)
             }
         }*/
+    }
+
+    Rectangle {
+        id: r1
+        width: 20
+        height: 20
+
+        MouseArea {
+            anchors.fill: parent
+            drag.target: r1
+        }
     }
 
 

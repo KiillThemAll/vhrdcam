@@ -7,6 +7,7 @@
 #include "vhapi/2dentities/lineentity.hpp"
 #include "vhapi/2dentities/markerentity.hpp"
 #include "vhapi/2dentities/polylineentity.h"
+#include "vhapi/2dentities/arcentity.h"
 
 #include <QDebug>
 
@@ -66,24 +67,32 @@ void GeometryPlayground::onDrawPlusClicked()
 //    entity.setValue<LineEntity>(l);
 //    emit rxport->substreamItemReceived(entity);
 
+    ArcEntity arc(PointEntity(0, 0, 0), PointEntity(100, -50, 0), PointEntity(200, 0, 0));
+    qDebug() << arc;
+    //return;
+
     MarkerEntity marker;
     marker.m_metadata["source"] = "geom_playground";
     QVariant v;
     v.setValue<MarkerEntity>(marker);
     emit rxport->substreamItemReceived(v);
 
-    PolylineEntity poly;
-    poly.setColor(255, 0, 0);
-    poly.setThickness(1);
+    LineEntity l = LineEntity(PointEntity(0, 0, 0, 255, 0, 0), PointEntity(300, 0.0, 0.0), 3);
+    v.setValue<LineEntity>(l);
+    emit rxport->substreamItemReceived(v);
 
-   for (float y = 0.0f; y < 2000.0f; y += 15.0f) {
-        for (float x = 0.0f; x < 2000.0f; x += 0.1f) {
-            poly.addPoint(PointEntity(x, y, 0.0));
-            poly.addPoint(PointEntity(x, y + 10.0, 0.0));
-        }
-    }
+//    PolylineEntity poly;
+//    poly.setColor(255, 0, 0);
+//    poly.setThickness(1);
 
-    v.setValue<PolylineEntity>(poly);
+//   for (float y = 0.0f; y < 2000.0f; y += 15.0f) {
+//        for (float x = 0.0f; x < 2000.0f; x += 0.1f) {
+//            poly.addPoint(PointEntity(x, y, 0.0));
+//            poly.addPoint(PointEntity(x, y + 10.0, 0.0));
+//        }
+//    }
+
+    v.setValue<ArcEntity>(arc);
     emit rxport->substreamItemReceived(v);
 
     marker.m_metadata.insert("end", QVariant());

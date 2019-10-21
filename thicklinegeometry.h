@@ -28,6 +28,7 @@ public:
     void addPoint(float x, float y, float z, quint8 r, quint8 g, quint8 b, float t);
     void breakStrip();
     void flush();
+    void setdz(float dz);
 
 public slots:
 
@@ -47,6 +48,7 @@ private:
     QByteArray m_indexData;
     quint32 m_currentPointIndex;
     quint32 m_globalPointIndex;
+    float m_dz;
 
     void finishStrip();
 };

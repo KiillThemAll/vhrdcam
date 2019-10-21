@@ -11,6 +11,7 @@ import tech.vhrd.cam 1.0 as V
 Entity {
     id: root
 
+    property alias camera: mainCamera
     property alias thickline: thickline
 
     KeyboardDevice { id: keyboard1 }
@@ -47,7 +48,7 @@ Entity {
     // Event Source will be set by the Qt3DQuickWindow
     InputSettings { id: inputSettings }
 
-    BasicCamera {
+    OrthoCamera {
         id: mainCamera
         viewCenter: Qt.vector3d( 0.5, 0.5, 0.0 )
         position: Qt.vector3d( 0.5, 0.5, 3.0 )
@@ -55,7 +56,7 @@ Entity {
 
     OrbitCameraController {
         camera: mainCamera
-        linearSpeed: 0.1
+        linearSpeed: 2.1
     }
 
 //    Background {

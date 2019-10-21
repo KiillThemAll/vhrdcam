@@ -6,6 +6,9 @@
 #include "vhapi/2dentities/curveentity.h"
 #include "vhapi/2dentities/markerentity.hpp"
 #include "vhapi/2dentities/shapeentity.h"
+#include "vhapi/2dentities/bsplineentity.h"
+#include "vhapi/2dentities/arcentity.h"
+#include <cmath>
 
 #include <QVector2D>
 
@@ -24,6 +27,42 @@ EntityPlaygroundVhApi *EntityPlayground::api() const
     return m_api;
 }
 
+QVariant tryArcFit(const BSplineEntity &bspline, float tStart, float tSpan, float eps)
+{
+    float a = tStart; // 0%
+    float e1 = tStart + tSpan / 4; // 25% further along the curve
+    float b = tStart + tSpan / 2; // 50%
+    float e2 = b + tSpan / 4; // 75%
+    float c = tStart + tSpan; // end of current approximation window
+    PointEntity ai = bspline.interpolate(a);
+    PointEntity bi = bspline.interpolate(b);
+    PointEntity ci = bspline.interpolate(c);
+    ArcEntity arc(bspline.interpolate(a), bspline.interpolate(b), bspline.interpolate(c));
+
+    QVariant v;
+    if (!arc.isValid()) { // a, b, c is on the same line
+        LineEntity l(ai, ci);
+        v.setValue<LineEntity>(l);
+        qDebug() << "tryArcFit: Line found instead";
+        return v;
+    }
+    PointEntity e1b = bspline.interpolate(e1);
+    PointEntity e1a = arc.interpolate(e1);
+    float err = powf(e1b.m_x - e1a.m_x, 2) + powf(e1b.m_y - e1a.m_y, 2);
+    if (err > eps) { // fail, try smaller window
+        return QVariant();
+    }
+    PointEntity e2b = bspline.interpolate(e2);
+    PointEntity e2a = arc.interpolate(e2);
+    err = powf(e2b.m_x - e2a.m_x, 2) + powf(e2b.m_y - e2a.m_y, 2);
+    if (err > eps) {
+        return QVariant();
+    }
+
+    v.setValue<ArcEntity>(arc);
+    return v;
+}
+
 void EntityPlayground::onEntity(const QVariant &entity)
 {
     if (entity.canConvert<MarkerEntity>()) {
@@ -32,6 +71,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
          if (!marker.m_metadata.contains("end")) {
              MarkerEntity marker;
              marker.m_metadata["source"] = "entity_playground";
+             marker.m_metadata["dz"] = -10;
              QVariant v;
              v.setValue<MarkerEntity>(marker);
              emit m_api->txentitiesFrameStarted();
@@ -39,6 +79,67 @@ void EntityPlayground::onEntity(const QVariant &entity)
          }
          return;
     }
+
+    if (!entity.canConvert<BSplineEntity>()) {
+        qDebug() << "EntityPlayground not a bspline";
+        return;
+    }
+    {
+        BSplineEntity bspline = entity.value<BSplineEntity>();
+        float eps = powf(0.25f, 2); // max error in mm
+        float tCurrent = 0.0f; // arc fit starts here
+        float tSpan = 1.0f; // ends here
+
+        bool spanDivided = false;
+        while (tCurrent < 1) {
+            //qDebug() << "trying" << tCurrent << tSpan;
+            QVariant fit = tryArcFit(bspline, tCurrent, tSpan, eps);
+            if (fit.isNull()) {
+                tSpan /= 2; // go down
+                spanDivided = true;
+            } else {
+                if (!spanDivided) {
+                    emit m_api->txentitiesSubstreamItemReceived(fit);
+                    qDebug() << "fit term criteria";
+                    break;
+                }
+                bool goUp = false;
+                float preGoUpSpan = tSpan * 2;
+                do { // go back up until boundary is found
+                    float lastGoodSpan = tSpan;
+                    tSpan = tSpan + (preGoUpSpan - tSpan) / 2;
+                    if (tCurrent + tSpan > 1) {
+                        qDebug() << "tryArcFit: should not happen?";
+                        tSpan = 1 - tCurrent;
+                    }
+                    //qDebug() << "good, checking" << tCurrent << tSpan;
+                    QVariant shouldFailFit = tryArcFit(bspline, tCurrent, tSpan, eps);
+                    if (shouldFailFit.isNull()) { // good-bad boundary found, entity is correct
+                        //qDebug() << "------OK------";
+                        emit m_api->txentitiesSubstreamItemReceived(fit);
+                        tCurrent = tCurrent + lastGoodSpan;
+                        tSpan = 1 - tCurrent;
+                        spanDivided = false;
+                        goUp = false;
+                    } else {
+                        goUp = true;
+                        fit = shouldFailFit;
+                    }
+                } while (goUp);
+            }
+        }
+
+        QVariant v;
+        MarkerEntity marker;
+        marker.m_metadata["source"] = "entity_playground";
+        marker.m_metadata.insert("end", QVariant());
+        v.setValue<MarkerEntity>(marker);
+        emit m_api->txentitiesSubstreamItemReceived(v);
+        qDebug() << "EntityPlayground: fit done?";
+    }
+
+
+    // ENGRAVER START HERE
     if (!entity.canConvert<GroupEntity>())
         return;
     qDebug() << "EntityPlayground: group found";

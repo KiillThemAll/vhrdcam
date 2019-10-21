@@ -2,6 +2,8 @@
 #define D2ENTITYRENDERER_H
 
 #include "vhapi/2dentities/baseentity.hpp"
+#include "vhapi/2dentities/bsplineentity.h"
+#include "vhapi/2dentities/arcentity.h"
 
 #include <QObject>
 #include <QHash>
@@ -36,6 +38,8 @@ private slots:
     void onEntityArrived(const QVariant &entity);
 
 private:
+    void interpolate(ThickLine *line, const BSplineEntity &bspline);
+    void interpolateArc(ThickLine *line, const ArcEntity &arc);
     void renderEntity(const QVariant &entity);
 
     Qt3DCore::QEntity* m_targetEntity;

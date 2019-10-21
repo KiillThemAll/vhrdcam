@@ -53,11 +53,13 @@ import Qt3D.Render 2.0
 
 Camera {
     id: mainCamera
-    projectionType: CameraLens.PerspectiveProjection
-    fieldOfView: 22.5
-    aspectRatio: _window.width / _window.height
-    nearPlane:   0.01
-    farPlane:    1000.0
-
-    upVector:   Qt.vector3d( 0.0, 1.0, 0.0 )
+    projectionType: CameraLens.OrthographicProjection
+    //upVector:   Qt.vector3d( 1.0, 1.0, 0.0 ).normalized()
+    property real zoom: 1.0
+    property real width: 1
+    property real height: 1 / (aspectRatio)
+    left: -width / zoom
+    right: width / zoom
+    bottom: -height / zoom
+    top: height / zoom
 }

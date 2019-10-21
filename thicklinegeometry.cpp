@@ -29,7 +29,8 @@ ThickLineGeometry::ThickLineGeometry(QNode *parent) :
     m_positionAttribute(nullptr),
     m_indexAttribute(nullptr),
     m_vertexBuffer(nullptr),
-    m_indexBuffer(nullptr)
+    m_indexBuffer(nullptr),
+    m_dz(0.0f)
 {
     m_positionAttribute = new QAttribute(this);
     m_colorAttribute = new QAttribute(this);
@@ -107,7 +108,7 @@ void ThickLineGeometry::addPoint(float x, float y, float z, quint8 r, quint8 g, 
 {
     x = x / 2000;
     y = y / 2000;
-    z = z / 2000;
+    z = (z + m_dz) / 2000;
     if (m_currentPointIndex == 0) { // add 4 strides for 2 real points and 2 adjacent points in advance
         //qDebug() << "if0";
         m_vertexData.resize(m_vertexData.size() + 4 * sizeof(thick_line_stride_t));
@@ -220,6 +221,11 @@ void ThickLineGeometry::flush()
     m_indexBuffer->setData(m_indexData);
 
     qDebug() << "strides:" << strideCount << m_vertexData.size() << "bytes;\t" << "indexes:" << indexCount << m_indexData.size() << "bytes";
+}
+
+void ThickLineGeometry::setdz(float dz)
+{
+    m_dz = dz;
 }
 
 void ThickLineGeometry::finishStrip()

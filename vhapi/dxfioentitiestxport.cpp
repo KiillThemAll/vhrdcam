@@ -6,6 +6,8 @@
 #include "2dentities/markerentity.hpp"
 #include "2dentities/groupentity.h"
 #include "2dentities/lineentity.hpp"
+#include "2dentities/point4fentity.h"
+#include "2dentities/bsplineentity.h"
 
 DxfIOEntitiesTxPort::DxfIOEntitiesTxPort(QObject *parent) : TxPort(parent)
 {
@@ -16,8 +18,48 @@ const qint8 POINT_ENTITY_EXT        = 0x01;
 const qint8 POLYLINE_ENTITY_EXT     = 0x02;
 const qint8 MARKER_ENTITY_EXT       = 0x03;
 const qint8 GROUP_ENTITY_EXT        = 0x04;
+const qint8 POINT4F_ENTITY_EXT      = 0x05;
+const qint8 BSPLINE_ENTITY_EXT      = 0x06;
 
 QVariant deserializeBaseEntity(MsgPackStream &s);
+
+MsgPackStream &operator>>(MsgPackStream &s, Point4fEntity &pt)
+{
+    quint32 length;
+    qint8 type;
+    s.readExtHeader(length, type);
+    if (type != POINT4F_ENTITY_EXT) {
+        s.setStatus(MsgPackStream::Status::ReadCorruptData);
+        return s;
+    }
+    s >> pt.m_x >> pt.m_y >> pt.m_z >> pt.m_w;
+    return s;
+}
+
+MsgPackStream &operator>>(MsgPackStream &s, BSplineEntity &b)
+{
+    quint32 length;
+    qint8 type;
+    s.readExtHeader(length, type);
+    if (type != BSPLINE_ENTITY_EXT) {
+        s.setStatus(MsgPackStream::Status::ReadCorruptData);
+        return s;
+    }
+    s.readArrayHeader(length);
+    for (quint32 i = 0; i < length; ++i) {
+        float k;
+        s >> k;
+        b.m_knots.append(k);
+    }
+    s.readArrayHeader(length);
+    for (quint32 i = 0; i < length; ++i) {
+        Point4fEntity pt;
+        s >> pt;
+        b.m_ctrlPoints.append(pt);
+    }
+    s >> b.m_order;
+    return s;
+}
 
 MsgPackStream &operator>>(MsgPackStream &s, PointEntity &pt)
 {
@@ -95,6 +137,14 @@ QVariant deserializeBaseEntity(MsgPackStream &s)
         GroupEntity ge;
         s >> ge;
         v.setValue(ge);
+    } else if (p.userType == POINT4F_ENTITY_EXT) {
+        Point4fEntity pt;
+        s >> pt;
+        v.setValue(pt);
+    } else if (p.userType == BSPLINE_ENTITY_EXT) {
+        BSplineEntity b;
+        s >> b;
+        v.setValue(b);
     }
     return v;
 }

@@ -22,7 +22,7 @@ PointEntity::~PointEntity()
 }
 
 PointEntity::PointEntity(float x, float y, float z) :
-    m_x(x), m_y(y), m_z(z), m_r(0), m_g(0), m_b(0)
+    m_x(x), m_y(y), m_z(z), m_r(0xcc), m_g(0xcc), m_b(0xcc)
 {
 }
 
