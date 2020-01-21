@@ -159,9 +159,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
     gcode << "G90" << endl;
 
     //dumpBox(gcodeFilename + "b", allShapesBox);
-    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y() << endl;
-
-    gcode << "G90 G0 B20" << endl;
+    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" B7" << endl;
 
     gcode << "M25" << endl;
     gcode << "G90" << endl;
@@ -218,6 +216,17 @@ void EntityPlayground::onEntity(const QVariant &entity)
         PointEntity leadIn;
         PointEntity leadOut;
         calculateLeads(points, leadIn, leadOut);
+
+        if (leadIn.m_y-leadOut.m_y > 0) {
+            QList<PointEntity>::iterator i;
+            for (i = points.begin(); i != points.end(); ++i)
+                i->m_y -= 0.055f;
+        }
+        else {
+            QList<PointEntity>::iterator i;
+            for (i = points.begin(); i != points.end(); ++i)
+                i->m_y += 0.055f;
+        }
 
         pl.setColor(QColor(Qt::blue)); gcode << "G0 ";
         pl.addPoint(leadIn); gcode << "X" << leadIn.m_x << " Y" << leadIn.m_y << endl;
