@@ -21,7 +21,7 @@ void DxfIO::syncReceived(const QByteArray &marker)
         m_entitiesTxPort->frameStarted();
     } else if (marker == "entities/end") {
         qDebug() << "DxfIO::syncReceived: end without items";
-        m_entitiesTxPort->frameEnded(QVariant());
+        m_entitiesTxPort->frameEnded(QVariantList());
 
         MarkerEntity m;
         m.m_metadata.insert("source", "dxfio");
@@ -42,7 +42,7 @@ void DxfIO::multipartReceived(const QByteArray &marker, const QByteArray &block)
 
 void DxfIO::load()
 {
-    const char *file = "/Users/roman/Desktop/test.dxf";
+    const char *file = "/home/woodenprint/Desktop/test.dxf";
     QByteArray mpacked;
     mpacked.append(0x81);
 

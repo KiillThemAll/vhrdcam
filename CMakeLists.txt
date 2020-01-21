@@ -48,4 +48,4 @@ add_executable(${PROJECT_NAME} "main.cpp"
     "qml.qrc")
 #target_include_directories(${PROJECT_NAME} PUBLIC ${ZMQ_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${ZMQ_LIBRARIES} PRIVATE Qt5::Core Qt5::Quick Qt5::Qml Qt5::3DRender Qt5::3DCore Qt5::3DExtras Qt5::3DQuickExtras Qt5::3DInput Qt5::3DQuick)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${ZeroMQ_LIBRARY} PRIVATE Qt5::Core Qt5::Quick Qt5::Qml Qt5::3DRender Qt5::3DCore Qt5::3DExtras Qt5::3DQuickExtras Qt5::3DInput Qt5::3DQuick)

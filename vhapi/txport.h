@@ -12,7 +12,7 @@ public:
 signals:
     void frameStarted();
     void substreamItemReceived(const QVariant &item);
-    void frameEnded(const QVariant &items);
+    void frameEnded(const QVariantList &items);
 
 public slots:
 };

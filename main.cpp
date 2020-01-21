@@ -93,6 +93,8 @@ int main(int argc, char *argv[])
     EntityPlayground *entityPlayground = new EntityPlayground;
     QObject::connect(p, &DxfIOEntitiesTxPort::substreamItemReceived,
                     entityPlayground->api(), &EntityPlaygroundVhApi::rxentitiesSubstreamItemReceived);
+    QObject::connect(p, &DxfIOEntitiesTxPort::frameEnded,
+                    entityPlayground->api(), &EntityPlaygroundVhApi::rxentitiesFrameEnded);
     QObject::connect(entityPlayground->api(), &EntityPlaygroundVhApi::txentitiesSubstreamItemReceived,
                      d2EntityRenderer->m_entitiesPort, &D2EntityRendererEntitiesIOPortVHAPI::substreamItemReceived);
 

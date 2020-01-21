@@ -17,6 +17,10 @@ EntityPlayground::EntityPlayground(QObject *parent) : QObject(parent)
     m_api = new EntityPlaygroundVhApi(this);
     connect(m_api, &EntityPlaygroundVhApi::rxentitiesSubstreamItemReceived,
             this, &EntityPlayground::onEntity);
+    connect(m_api, &EntityPlaygroundVhApi::rxentitiesFrameEnded,
+            this, &EntityPlayground::onFrameEnded);
+
+    m_lastPos = PointEntity(0, 0, 0);
 }
 
 EntityPlaygroundVhApi *EntityPlayground::api() const
@@ -41,7 +45,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
     }
     if (!entity.canConvert<GroupEntity>())
         return;
-    qDebug() << "EntityPlayground: group found";
+    //qDebug() << "EntityPlayground: group found";
 
     QList<CurveEntity> closedCurves;
     GroupEntity group = entity.value<GroupEntity>();
@@ -52,7 +56,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
             closedCurves.append(curve);
     }
 
-    qDebug() << "EntityPlayground: found" << closedCurves.length() << "closed curves";
+    //qDebug() << "EntityPlayground: found" << closedCurves.length() << "closed curves";
 
 
 
@@ -93,15 +97,6 @@ void EntityPlayground::onEntity(const QVariant &entity)
     if (shapes.isEmpty())
         return;
 
-    QString time = QTime::currentTime().toString("hh-mm-ss-zzz");
-    QString gcodeFilename = "/Volumes/Red Volume/out" + time + ".gcode";
-    QFile f(gcodeFilename);
-    qDebug() << "Opening: " << gcodeFilename << f.open(QIODevice::WriteOnly);
-    QTextStream gcode(&f);
-    gcode.setRealNumberNotation(QTextStream::FixedNotation);
-    gcode.setRealNumberPrecision(4);
-
-    gcode << "G90 G21" << endl;
 
 
     // Render bounding boxes for shapes
@@ -144,14 +139,41 @@ void EntityPlayground::onEntity(const QVariant &entity)
 //    v.setValue<PolylineEntity>(polyline);
 //    emit m_api->txentitiesSubstreamItemReceived(v);
 
+    QString time = QTime::currentTime().toString("sszzz");
+    QString gcodeFilename = "/home/woodenprint/Desktop/out/" +
+            QString::number(allShapesBox.center().y(), 'g', 6) + "_" + time + ".g";
+    QFile f(gcodeFilename);
+    if (!f.open(QIODevice::WriteOnly)) {
+        qDebug() << "Open failed: " << gcodeFilename << f.open(QIODevice::WriteOnly);
+    }
+
+    QTextStream gcode(&f);
+    gcode.setRealNumberNotation(QTextStream::FixedNotation);
+    gcode.setRealNumberPrecision(4);
+
+    gcode << "G21" << endl;
+    gcode << "G91 G0 X0 F10000" << endl;
+    gcode << "G1 X0 F10000" << endl;
+    gcode << "M204 S1000" << endl;
+    gcode << "M220 S100" << endl;
+    gcode << "G90" << endl;
+
+    //dumpBox(gcodeFilename + "b", allShapesBox);
+    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y() << endl;
+
+    gcode << "G90 G0 B20" << endl;
+
+    gcode << "M25" << endl;
+    gcode << "G90" << endl;
+
     PointEntity a(allShapesBox.bottomLeft().x(), allShapesBox.bottomLeft().y(), 0.0f);
     PointEntity b(allShapesBox.topLeft().x(), allShapesBox.topLeft().y(), 0.0f);
-    float dx = 0.15;
+    float dx = 0.12;// - ((rand() % 1000) / 10000.0f);
     bool goingUp = true;
 
     PolylineEntity pl;
     pl.setThickness(1);
-    PointEntity lastPosition(0.0f, 0.0f, 0.0f);
+    PointEntity lastPosition = m_lastPos;
     pl.setColor(QColor(Qt::magenta));
     pl.addPoint(lastPosition);
 
@@ -180,9 +202,16 @@ void EntityPlayground::onEntity(const QVariant &entity)
 //            }
 //        }
         //qDebug() << "points after" << points;
-        if (points.isEmpty()) {
+        if (points.length() < 2) {
             a.m_x += dx;
             b.m_x += dx;
+            continue;
+        }
+
+        if (points.length() % 2 == 1) {
+            qDebug() << "glitch found at" << a;
+            a.m_x += dx/10;
+            b.m_x += dx/10;
             continue;
         }
 
@@ -227,10 +256,10 @@ void EntityPlayground::onEntity(const QVariant &entity)
         a.m_x += dx;
         b.m_x += dx;
         cum_dx += dx;
-        if (cum_dx > 3) {
-            qDebug() << a.m_x << allShapesBox.right() - a.m_x;
-            cum_dx = 0;
-        }
+//        if (cum_dx > 3) {
+//            qDebug() << a.m_x << allShapesBox.right() - a.m_x;
+//            cum_dx = 0;
+//        }
 
         goingUp = !goingUp;
     }
@@ -239,13 +268,25 @@ void EntityPlayground::onEntity(const QVariant &entity)
     v.setValue<PolylineEntity>(pl);
     emit m_api->txentitiesSubstreamItemReceived(v);
 
+    m_lastPos = lastPosition;
+
+//    MarkerEntity marker;
+//    marker.m_metadata["source"] = "entity_playground";
+//    marker.m_metadata.insert("end", QVariant());
+//    v.setValue<MarkerEntity>(marker);
+//    emit m_api->txentitiesSubstreamItemReceived(v);
+
+    //emit m_api->txentitiesFrameEnded(); // m_api should collect items himself
+}
+
+void EntityPlayground::onFrameEnded(const QVariant &items)
+{
     MarkerEntity marker;
     marker.m_metadata["source"] = "entity_playground";
     marker.m_metadata.insert("end", QVariant());
+    QVariant v;
     v.setValue<MarkerEntity>(marker);
     emit m_api->txentitiesSubstreamItemReceived(v);
-
-    //emit m_api->txentitiesFrameEnded(); // m_api should collect items himself
 }
 
 void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut)
@@ -263,5 +304,22 @@ void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEnti
     direction *= -1;
     leadOut = PointEntity(last.m_x + direction.x(),
                              last.m_y + direction.y(),
-                             0.0f);
+                          0.0f);
+}
+
+void EntityPlayground::dumpBox(const QString &filename, const QRectF &box)
+{
+    QFile f(filename);
+    f.open(QIODevice::WriteOnly);
+    QTextStream gcode(&f);
+    gcode.setRealNumberNotation(QTextStream::FixedNotation);
+    gcode.setRealNumberPrecision(4);
+
+    gcode << "G90 G21" << endl;
+    gcode << "G0 X" << box.bottomLeft().x() << " Y" << box.bottomLeft().y() << endl;
+    gcode << "G0 X" << box.bottomRight().x() << " Y" << box.bottomRight().y() << endl;
+    gcode << "G0 X" << box.topRight().x() << " Y" << box.topRight().y() << endl;
+    gcode << "G0 X" << box.topLeft().x() << " Y" << box.topLeft().y() << endl;
+
+    gcode << "G0 X" << box.center().x() << " Y" << box.center().y() << endl;
 }

@@ -180,7 +180,7 @@ void ThickLineGeometry::breakStrip()
 void ThickLineGeometry::flush()
 {
     // not enough data to render, only 4 strides reserved and 0 or 1 point added
-    if (m_currentPointIndex < 2 && m_globalPointIndex == 0 && (m_vertexData.size() == 4 * sizeof(thick_line_stride_t))) {
+    if (m_globalPointIndex < 2) {
         qDebug() << "flush clear";
         m_positionAttribute->setCount(0);
         m_colorAttribute->setCount(0);

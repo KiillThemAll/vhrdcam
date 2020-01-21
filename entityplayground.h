@@ -18,11 +18,14 @@ signals:
 
 private slots:
     void onEntity(const QVariant &entity);
+    void onFrameEnded(const QVariant &items);
 
 private:
     EntityPlaygroundVhApi *m_api;
+    PointEntity m_lastPos;
 
     void calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut);
+    void dumpBox(const QString &filename, const QRectF &box);
 };
 
 #endif // ENTITYPLAYGROUND_H
