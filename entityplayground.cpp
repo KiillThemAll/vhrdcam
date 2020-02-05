@@ -159,7 +159,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
     gcode << "G90" << endl;
 
     //dumpBox(gcodeFilename + "b", allShapesBox);
-    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" B7" << endl;
+    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" B9" << endl;
 
     gcode << "M25" << endl;
     gcode << "G90" << endl;
