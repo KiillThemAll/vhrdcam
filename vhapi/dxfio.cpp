@@ -42,7 +42,7 @@ void DxfIO::multipartReceived(const QByteArray &marker, const QByteArray &block)
 
 void DxfIO::load()
 {
-    const char *file = "/home/woodenprint/Desktop/test.dxf";
+    const char *file = "/home/woodenprint/Desktop/woodenGcode/test.dxf";
     QByteArray mpacked;
     mpacked.append(0x81);
 
