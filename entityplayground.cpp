@@ -140,7 +140,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
 //    emit m_api->txentitiesSubstreamItemReceived(v);
 
     QString time = QTime::currentTime().toString("sszzz");
-    QString gcodeFilename = "/home/woodenprint/Desktop/out/" +
+    QString gcodeFilename = "/home/woodenprint/Desktop/out/temp/" +
             QString::number(allShapesBox.center().y(), 'g', 6) + "_" + time + ".g";
     QFile f(gcodeFilename);
     if (!f.open(QIODevice::WriteOnly)) {
@@ -296,6 +296,21 @@ void EntityPlayground::onFrameEnded(const QVariant &items)
     QVariant v;
     v.setValue<MarkerEntity>(marker);
     emit m_api->txentitiesSubstreamItemReceived(v);
+}
+
+void EntityPlayground::exportEngraveFile(const QString &fileName)
+{
+    QFile f("/home/woodenprint/Desktop/out/result/" + fileName);
+    if (!f.open(QIODevice::Truncate)) {
+        qDebug() << "Open failed";
+    }
+
+    QProcess concatenateTempFilesToResult;
+    QStringList args;
+    args << "/home/woodenprint/Desktop/out/temp/" << "-v" << "*.g" << "|" << "xargs" << "cat" << ">" << "/home/woodenprint/Desktop/out/result/" + fileName;
+    concatenateTempFilesToResult.start("ls", args);
+
+    concatenateTempFilesToResult.waitForFinished();
 }
 
 void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut)

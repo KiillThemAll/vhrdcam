@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
     view.engine()->rootContext()->setContextProperty("d2renderer", d2EntityRenderer);
     view.engine()->rootContext()->setContextProperty("dxfio", dxfio);
     view.engine()->rootContext()->setContextProperty("zmq", zmqInterface);
+    view.engine()->rootContext()->setContextProperty("entity_playground", entityPlayground);
 
     view.setFormat(format);
     view.setResizeMode(QQuickView::SizeRootObjectToView);

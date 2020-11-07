@@ -2,6 +2,8 @@
 #define ENTITYPLAYGROUND_H
 
 #include <QObject>
+#include <QUrl>
+#include <QProcess>
 #include "vhapi/2dentities/pointentity.hpp"
 
 class EntityPlaygroundVhApi;
@@ -14,11 +16,11 @@ public:
 
     EntityPlaygroundVhApi *api() const;
 
-signals:
-
 private slots:
     void onEntity(const QVariant &entity);
     void onFrameEnded(const QVariant &items);
+
+    void exportEngraveFile(const QString &fileName);
 
 private:
     EntityPlaygroundVhApi *m_api;

@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QHash>
+#include <QUrl>
 #include "vhapi/txport.h"
 
 class DxfIOEntitiesTxPort;
@@ -22,7 +23,7 @@ signals:
 public slots:
     void syncReceived(const QByteArray &marker);
     void multipartReceived(const QByteArray &marker, const QByteArray &block); // hide somehow?
-    void load();
+    void load(const QUrl &url);
 
 private:
     QHash<QString, TxPort *> m_txports;

@@ -1,7 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Scene3D 2.0
-
+import QtQuick.Dialogs 1.2
 import QtQuick.Controls 2.5
 
 //import units 1.0
@@ -20,7 +20,7 @@ Rectangle {
         anchors.margins: 10
         color: "#232323"
 
-        Button {
+        /*Button {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 20
@@ -34,25 +34,65 @@ Rectangle {
             anchors.topMargin: 80
             text: "Draw +"
             onClicked: playground.onDrawPlusClicked()
+        }*/
+
+        FileDialog {
+            id: importFileDialog
+            title: "Choose import file"
+            folder: shortcuts.home
+            onAccepted: {
+                dxfio.load(fileUrl)
+            }
+        }
+
+        Row{
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 20
+
+            Text{
+                text: "Export: ~/Desktop/out/result/ "
+            }
+
+            FocusScope {
+                width: 180; height: input.height + 8
+                Rectangle {
+                    anchors.fill: parent
+                    color: "lightsteelblue"
+                    border.color: "gray"
+                }
+                TextInput {
+                    id: exportFileNameInput
+                    height: 20
+                    anchors.fill: parent
+                    anchors.margins: 4
+                    focus: true
+                    font.pointSize: 12
+                    clip: true
+                    text: "sum.ngc"
+                }
+            }
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 80
+            text: "Load"
+            onClicked: importFileDialog.visible = true
         }
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 140
-            text: "Load"
-            onClicked: dxfio.load()
+            text: "Export"
+            onClicked: {
+                entity_playground.exportEngraveFile(exportFileNameInput.text)
+            }
         }
 
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 200
-            text: "Stop 0mq"
-            onClicked: zmq.stop()
-        }
-
-        Button {
+        /*Button {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 260
@@ -60,7 +100,7 @@ Rectangle {
             onClicked: {
                 scene3d.focus = true
             }
-        }
+        }*/
     }
 
     Component.onCompleted: {
