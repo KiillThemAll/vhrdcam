@@ -12,6 +12,8 @@
 #include <QFile>
 #include <QTime>
 
+#include <QtMath>
+
 EntityPlayground::EntityPlayground(QObject *parent) : QObject(parent)
 {
     m_api = new EntityPlaygroundVhApi(this);
@@ -139,15 +141,17 @@ void EntityPlayground::onEntity(const QVariant &entity)
 //    v.setValue<PolylineEntity>(polyline);
 //    emit m_api->txentitiesSubstreamItemReceived(v);
 
-    QString time = QTime::currentTime().toString("sszzz");
+    /*QString time = QTime::currentTime().toString("sszzz");
     QString gcodeFilename = "/home/woodenprint/Desktop/out/temp/" +
             QString::number(allShapesBox.center().x(), 'g', 6) + "_" + QString::number(allShapesBox.center().y(), 'g', 6)+ "_" + time + ".g";
     QFile f(gcodeFilename);
     if (!f.open(QIODevice::WriteOnly)) {
         qDebug() << "Open failed: " << gcodeFilename << f.open(QIODevice::WriteOnly);
-    }
+    }*/
 
-    QTextStream gcode(&f);
+    EngraveObject engrObj(allShapesBox.center().x(), allShapesBox.center().y());
+
+    QTextStream gcode(&engrObj.m_gCode);
     gcode.setRealNumberNotation(QTextStream::FixedNotation);
     gcode.setRealNumberPrecision(4);
 
@@ -279,6 +283,8 @@ void EntityPlayground::onEntity(const QVariant &entity)
 
     m_lastPos = lastPosition;
 
+    m_engraveObjects.append(engrObj);
+
 //    MarkerEntity marker;
 //    marker.m_metadata["source"] = "entity_playground";
 //    marker.m_metadata.insert("end", QVariant());
@@ -303,17 +309,39 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
     QFile f("/home/woodenprint/Desktop/out/result/" + fileName);
     if (!f.open(QIODevice::WriteOnly)) {
         qDebug() << "Open failed";
+        return;
     }
 
-    QProcess concatenateTempFilesToResult;
-    QStringList args;
-    args << "-v" << "*.g" << "|" << "xargs" << "cat" << ">" << "/home/woodenprint/Desktop/out/result/" + fileName;
-    concatenateTempFilesToResult.setWorkingDirectory("/home/woodenprint/Desktop/out/temp/");
-    concatenateTempFilesToResult.setProcessChannelMode(QProcess::MergedChannels);
-    concatenateTempFilesToResult.start("ls", args);
+    QTextStream gcode(&f);
 
-    concatenateTempFilesToResult.waitForFinished();
-    qDebug() << concatenateTempFilesToResult.readAll();
+    EngraveObject tempObject(0,0);
+    int objectPose = 0;
+    float minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
+    int i = 0;
+
+    for (i = 0; i < m_engraveObjects.size(); i++)
+        if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
+            minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
+            objectPose = i;
+        }
+
+    tempObject = m_engraveObjects.takeAt(objectPose);
+    gcode << tempObject.m_gCode;
+    minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
+    objectPose = 0;
+    i = 0;
+    while (m_engraveObjects.size()){
+        if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
+            minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
+            objectPose = i;
+        }
+        i++;
+        if(i == m_engraveObjects.size()){
+            tempObject = m_engraveObjects.takeAt(objectPose);
+            gcode << tempObject.m_gCode;
+            i = 0;
+        }
+    }
 }
 
 void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut)
@@ -349,4 +377,13 @@ void EntityPlayground::dumpBox(const QString &filename, const QRectF &box)
     gcode << "G0 X" << box.topLeft().x() << " Y" << box.topLeft().y() << endl;
 
     gcode << "G0 X" << box.center().x() << " Y" << box.center().y() << endl;
+}
+
+EngraveObject::EngraveObject() {}
+
+EngraveObject::EngraveObject(float x, float y) : m_x(x), m_y(y) {}
+
+float EngraveObject::distanceTo(const EngraveObject &obj)
+{
+    return qSqrt(qPow(obj.m_x-m_x,2)+qPow(obj.m_y-m_y,2));
 }

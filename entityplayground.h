@@ -8,6 +8,18 @@
 
 class EntityPlaygroundVhApi;
 
+class EngraveObject{
+public:
+    EngraveObject();
+    EngraveObject(float x, float y);
+
+    float distanceTo(const EngraveObject &obj);
+
+    float m_x;
+    float m_y;
+    QString m_gCode;
+};
+
 class EntityPlayground : public QObject
 {
     Q_OBJECT
@@ -22,11 +34,11 @@ public slots:
 private slots:
     void onEntity(const QVariant &entity);
     void onFrameEnded(const QVariant &items);
-    //void onReadyRead();
 
 private:
     EntityPlaygroundVhApi *m_api;
     PointEntity m_lastPos;
+    QList<EngraveObject> m_engraveObjects;
 
     void calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut);
     void dumpBox(const QString &filename, const QRectF &box);

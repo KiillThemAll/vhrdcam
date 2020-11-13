@@ -11,7 +11,7 @@ SET(GCC_COVERAGE_COMPILE_FLAGS "-lstdc++")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 
 find_package(Qt5 COMPONENTS Core Quick Qml 3DQuick 3DRender 3DCore 3DExtras 3DQuickExtras 3DInput REQUIRED)
-find_package(ZeroMQ REQUIRED)
+find_package(ZeroMQ)# REQUIRED)
 #find_package(MsgPackQtTargets)
 
 include_directories(${EIGEN_DIR})
@@ -39,12 +39,12 @@ add_executable(${PROJECT_NAME} "main.cpp"
     "vhapi/zeromqinterfaceworker.cpp"
     "vhapi/txport.cpp"
     "vhapi/dxfioentitiestxport.cpp"
-    "3rdparty/qmsgpack/src/msgpack.cpp"
-    "3rdparty/qmsgpack/src/msgpackstream.cpp"
-    "3rdparty/qmsgpack/src/private/pack_p.cpp"
-    "3rdparty/qmsgpack/src/private/unpack_p.cpp"
-    "3rdparty/qmsgpack/src/private/qt_types_p.cpp"
-    "3rdparty/qmsgpack/src/stream/time.cpp"
+    #"3rdparty/qmsgpack/src/msgpack.cpp"
+    #"3rdparty/qmsgpack/src/msgpackstream.cpp"
+    #"3rdparty/qmsgpack/src/private/pack_p.cpp"
+    #"3rdparty/qmsgpack/src/private/unpack_p.cpp"
+    #"3rdparty/qmsgpack/src/private/qt_types_p.cpp"
+    #"3rdparty/qmsgpack/src/stream/time.cpp"
     "entityplayground.cpp"
     "vhapi/entityplaygroundvhapi.cpp"
     "qml.qrc")
