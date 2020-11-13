@@ -51,11 +51,13 @@ Rectangle {
             anchors.topMargin: 20
 
             Text{
-                text: "Export: ~/Desktop/out/result/ "
+                text: "~/Desktop/out/result/ "
+                color: "white"
+                font.pointSize: 12
             }
 
             FocusScope {
-                width: 180; height: input.height + 8
+                width: 180; height: 25
                 Rectangle {
                     anchors.fill: parent
                     color: "lightsteelblue"
@@ -111,7 +113,7 @@ Rectangle {
     Item {
         id: scene3dContainer
         anchors.top: parent.top; anchors.bottom: parent.bottom; anchors.right: parent.right
-        width: parent.width * 0.8
+        width: parent.width * 0.7
         anchors.margins: 10
 
         Scene3D {

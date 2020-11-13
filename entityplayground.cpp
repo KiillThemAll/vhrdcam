@@ -141,7 +141,7 @@ void EntityPlayground::onEntity(const QVariant &entity)
 
     QString time = QTime::currentTime().toString("sszzz");
     QString gcodeFilename = "/home/woodenprint/Desktop/out/temp/" +
-            QString::number(allShapesBox.center().y(), 'g', 6) + "_" + time + ".g";
+            QString::number(allShapesBox.center().x(), 'g', 6) + "_" + QString::number(allShapesBox.center().y(), 'g', 6)+ "_" + time + ".g";
     QFile f(gcodeFilename);
     if (!f.open(QIODevice::WriteOnly)) {
         qDebug() << "Open failed: " << gcodeFilename << f.open(QIODevice::WriteOnly);
@@ -301,16 +301,19 @@ void EntityPlayground::onFrameEnded(const QVariant &items)
 void EntityPlayground::exportEngraveFile(const QString &fileName)
 {
     QFile f("/home/woodenprint/Desktop/out/result/" + fileName);
-    if (!f.open(QIODevice::Truncate)) {
+    if (!f.open(QIODevice::WriteOnly)) {
         qDebug() << "Open failed";
     }
 
     QProcess concatenateTempFilesToResult;
     QStringList args;
-    args << "/home/woodenprint/Desktop/out/temp/" << "-v" << "*.g" << "|" << "xargs" << "cat" << ">" << "/home/woodenprint/Desktop/out/result/" + fileName;
+    args << "-v" << "*.g" << "|" << "xargs" << "cat" << ">" << "/home/woodenprint/Desktop/out/result/" + fileName;
+    concatenateTempFilesToResult.setWorkingDirectory("/home/woodenprint/Desktop/out/temp/");
+    concatenateTempFilesToResult.setProcessChannelMode(QProcess::MergedChannels);
     concatenateTempFilesToResult.start("ls", args);
 
     concatenateTempFilesToResult.waitForFinished();
+    qDebug() << concatenateTempFilesToResult.readAll();
 }
 
 void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut)

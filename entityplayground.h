@@ -16,11 +16,13 @@ public:
 
     EntityPlaygroundVhApi *api() const;
 
+public slots:
+    void exportEngraveFile(const QString &fileName);
+
 private slots:
     void onEntity(const QVariant &entity);
     void onFrameEnded(const QVariant &items);
-
-    void exportEngraveFile(const QString &fileName);
+    //void onReadyRead();
 
 private:
     EntityPlaygroundVhApi *m_api;

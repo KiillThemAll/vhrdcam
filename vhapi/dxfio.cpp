@@ -42,7 +42,8 @@ void DxfIO::multipartReceived(const QByteArray &marker, const QByteArray &block)
 
 void DxfIO::load(const QUrl &url)
 {
-    const char *file = url.toString().toLatin1().data();//"/home/woodenprint/Desktop/woodenGcode/test.dxf";
+    const char *file = url.toString(QUrl::RemoveScheme).toLatin1().data();//"/home/woodenprint/Desktop/woodenGcode/test.dxf";
+    //const char *file = "/home/woodenprint/Desktop/woodenGcode/test.dxf";
     QByteArray mpacked;
     mpacked.append(0x81);
 
