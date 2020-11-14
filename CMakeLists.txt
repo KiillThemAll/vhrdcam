@@ -47,6 +47,7 @@ add_executable(${PROJECT_NAME} "main.cpp"
     "3rdparty/qmsgpack/src/stream/time.cpp"
     "entityplayground.cpp"
     "vhapi/entityplaygroundvhapi.cpp"
+    "dxfparserprocess.cpp"
     "qml.qrc")
 #target_include_directories(${PROJECT_NAME} PUBLIC ${ZMQ_INCLUDE_DIRS})
 target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)

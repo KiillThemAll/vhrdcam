@@ -317,9 +317,9 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
     EngraveObject tempObject(0,0);
     int objectPose = 0;
     float minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
-    int i = 0;
+    int i;
 
-    for (i = 0; i < m_engraveObjects.size(); i++)
+    for (i = 1; i < m_engraveObjects.size(); i++)
         if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
             minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
             objectPose = i;
@@ -327,19 +327,21 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
 
     tempObject = m_engraveObjects.takeAt(objectPose);
     gcode << tempObject.m_gCode;
-    minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
-    objectPose = 0;
-    i = 0;
-    while (m_engraveObjects.size()){
-        if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
-            minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
-            objectPose = i;
-        }
-        i++;
-        if(i == m_engraveObjects.size()){
-            tempObject = m_engraveObjects.takeAt(objectPose);
-            gcode << tempObject.m_gCode;
-            i = 0;
+    if(m_engraveObjects.size() != 0){
+        minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
+        objectPose = 0;
+        i = 1;
+        while (m_engraveObjects.size() != 0){
+            if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
+                minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
+                objectPose = i;
+            }
+            i++;
+            if(i == m_engraveObjects.size()){
+                tempObject = m_engraveObjects.takeAt(objectPose);
+                gcode << tempObject.m_gCode;
+                i = 0;
+            }
         }
     }
 }
