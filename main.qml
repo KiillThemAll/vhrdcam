@@ -41,6 +41,7 @@ Rectangle {
             title: "Choose import file"
             folder: shortcuts.home
             onAccepted: {
+                entity_playground.clearEngraveObjectsCache()
                 dxfio.load(fileUrl)
             }
         }
@@ -51,7 +52,7 @@ Rectangle {
             anchors.topMargin: 20
 
             Text{
-                text: "~/Desktop/out/result/ "
+                text: "~/Desktop/out/ "
                 color: "white"
                 font.pointSize: 12
             }

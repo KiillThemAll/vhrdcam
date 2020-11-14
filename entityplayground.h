@@ -30,6 +30,7 @@ public:
 
 public slots:
     void exportEngraveFile(const QString &fileName);
+    void clearEngraveObjectsCache();
 
 private slots:
     void onEntity(const QVariant &entity);

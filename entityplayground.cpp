@@ -306,7 +306,7 @@ void EntityPlayground::onFrameEnded(const QVariant &items)
 
 void EntityPlayground::exportEngraveFile(const QString &fileName)
 {
-    QFile f("/home/woodenprint/Desktop/out/result/" + fileName);
+    QFile f("/home/woodenprint/Desktop/out/" + fileName);
     if (!f.open(QIODevice::WriteOnly)) {
         qDebug() << "Open failed";
         return;
@@ -342,6 +342,11 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
             i = 0;
         }
     }
+}
+
+void EntityPlayground::clearEngraveObjectsCache()
+{
+    m_engraveObjects.clear();
 }
 
 void EntityPlayground::calculateLeads(const QList<PointEntity> &moves, PointEntity &leadIn, PointEntity &leadOut)
