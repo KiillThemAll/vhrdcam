@@ -3,7 +3,6 @@
 #include "thinlinemesh.h"
 #include "thickline.h"
 #include "geometryplayground.h"
-
 #include "vhapi/2dentities/lineentity.hpp"
 #include "vhapi/2dentities/polylineentity.h"
 #include "vhapi/2dentities/groupentity.h"
@@ -11,13 +10,13 @@
 #include "vhapi/2dentities/curveentity.h"
 #include "vhapi/2dentities/shapeentity.h"
 #include "d2entityrenderer.h"
-
 #include "vhapi/zeromqinterface.h"
 #include "vhapi/zeromqinterfaceworker.h"
 #include "vhapi/dxfio.h"
 #include "vhapi/dxfioentitiestxport.h"
 #include "entityplayground.h"
 #include "vhapi/entityplaygroundvhapi.h"
+#include "dxfparserprocess.h"
 
 #include <Qt3DQuickExtras/qt3dquickwindow.h>
 #include <Qt3DQuick/QQmlAspectEngine>
@@ -38,8 +37,6 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-
-
 
     QGuiApplication app(argc, argv);
 
@@ -98,6 +95,8 @@ int main(int argc, char *argv[])
     QObject::connect(entityPlayground->api(), &EntityPlaygroundVhApi::txentitiesSubstreamItemReceived,
                      d2EntityRenderer->m_entitiesPort, &D2EntityRendererEntitiesIOPortVHAPI::substreamItemReceived);
 
+    //DxfParserProcess dxfParser;
+
     QQuickView view;
     view.engine()->rootContext()->setContextProperty("_window", &app);
     view.engine()->rootContext()->setContextProperty("playground", playground);
@@ -105,6 +104,7 @@ int main(int argc, char *argv[])
     view.engine()->rootContext()->setContextProperty("dxfio", dxfio);
     view.engine()->rootContext()->setContextProperty("zmq", zmqInterface);
     view.engine()->rootContext()->setContextProperty("entity_playground", entityPlayground);
+    //view.engine()->rootContext()->setContextProperty("dxf_parser", &dxfParser);
 
     view.setFormat(format);
     view.setResizeMode(QQuickView::SizeRootObjectToView);

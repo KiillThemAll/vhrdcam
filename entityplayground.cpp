@@ -163,8 +163,8 @@ void EntityPlayground::onEntity(const QVariant &entity)
     gcode << "G90" << endl;
 
     //dumpBox(gcodeFilename + "b", allShapesBox);
-    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" B9" << endl;
-
+    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" Z9" << endl;
+    gcode << "G0 X" << allShapesBox.center().x() << " Y" << allShapesBox.center().y()<<" Z9" << endl;
     gcode << "M25" << endl;
     gcode << "G90" << endl;
 
@@ -331,7 +331,7 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
         minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
         objectPose = 0;
         i = 1;
-        while (m_engraveObjects.size() != 0){
+        while (m_engraveObjects.size() != 1){
             if(tempObject.distanceTo(m_engraveObjects.at(i)) < minDistance){
                 minDistance = tempObject.distanceTo(m_engraveObjects.at(i));
                 objectPose = i;
@@ -340,9 +340,12 @@ void EntityPlayground::exportEngraveFile(const QString &fileName)
             if(i == m_engraveObjects.size()){
                 tempObject = m_engraveObjects.takeAt(objectPose);
                 gcode << tempObject.m_gCode;
-                i = 0;
+                minDistance = tempObject.distanceTo(m_engraveObjects.at(0));
+                objectPose = 0;
+                i = 1;
             }
         }
+        gcode << m_engraveObjects.at(0).m_gCode;
     }
 }
 

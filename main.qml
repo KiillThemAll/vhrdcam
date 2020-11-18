@@ -20,90 +20,95 @@ Rectangle {
         anchors.margins: 10
         color: "#232323"
 
-        /*Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 20
-            text: "Draw smth"
-            onClicked: playground.onDrawSmthClicked()
-        }
+        Column{
+            anchors.fill: parent
 
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 80
-            text: "Draw +"
-            onClicked: playground.onDrawPlusClicked()
-        }*/
-
-        FileDialog {
-            id: importFileDialog
-            title: "Choose import file"
-            folder: shortcuts.home
-            onAccepted: {
-                entity_playground.clearEngraveObjectsCache()
-                dxfio.load(fileUrl)
-            }
-        }
-
-        Row{
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 20
-
-            Text{
-                text: "~/Desktop/out/ "
-                color: "white"
-                font.pointSize: 12
-            }
-
-            FocusScope {
-                width: 180; height: 25
-                Rectangle {
-                    anchors.fill: parent
-                    color: "lightsteelblue"
-                    border.color: "gray"
+            FileDialog {
+                id: importFileDialog
+                title: "Choose import file"
+                folder: shortcuts.home
+                onAccepted: {
+                    entity_playground.clearEngraveObjectsCache()
+                    dxfio.load(fileUrl)
                 }
-                TextInput {
-                    id: exportFileNameInput
-                    height: 20
-                    anchors.fill: parent
-                    anchors.margins: 4
-                    focus: true
+            }
+
+            Row{
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.top: parent.top
+                //anchors.topMargin: 20
+
+                Text{
+                    text: "~/Desktop/out/ "
+                    color: "white"
                     font.pointSize: 12
-                    clip: true
-                    text: "sum.ngc"
+                }
+
+                FocusScope {
+                    width: 180; height: 25
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "lightsteelblue"
+                        border.color: "gray"
+                    }
+                    TextInput {
+                        id: exportFileNameInput
+                        height: 20
+                        anchors.fill: parent
+                        anchors.margins: 4
+                        focus: true
+                        font.pointSize: 12
+                        clip: true
+                        text: "sum.ngc"
+                    }
+                }
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.top: parent.top
+                //anchors.topMargin: 80
+                text: "Load"
+                onClicked: importFileDialog.visible = true
+            }
+
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.top: parent.top
+                //anchors.topMargin: 140
+                text: "Export"
+                onClicked: {
+                    entity_playground.exportEngraveFile(exportFileNameInput.text)
+                }
+            }
+
+            ListView{
+                id: dxfParserOutputView
+                topMargin: 10
+                leftMargin: 10
+                rightMargin: 10
+
+                width: parent.width
+                height: 500
+                clip: true
+                spacing: 10
+
+                model: ListModel{id: dxfParserOutputModel}
+                delegate: Text{
+                    text: message
+                    font.pointSize: 6
+                    color: "white"
+                }
+                Connections{
+                    target:dxf_parser
+
+                    onMsgFromParser: {
+                        dxfParserOutputModel.append({"message": msg})
+                        dxfParserOutputView.positionViewAtEnd()
+                    }
                 }
             }
         }
-
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 80
-            text: "Load"
-            onClicked: importFileDialog.visible = true
-        }
-
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 140
-            text: "Export"
-            onClicked: {
-                entity_playground.exportEngraveFile(exportFileNameInput.text)
-            }
-        }
-
-        /*Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 260
-            text: "Focus"
-            onClicked: {
-                scene3d.focus = true
-            }
-        }*/
     }
 
     Component.onCompleted: {

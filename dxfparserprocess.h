@@ -9,6 +9,8 @@ class DxfParserProcess : public QObject
 public:
     explicit DxfParserProcess(QObject *parent = nullptr);
 
+signals:
+    void msgFromParser(const QString &msg);
 public slots:
     void onReadyRead();
     void restartProcess();
